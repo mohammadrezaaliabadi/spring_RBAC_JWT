@@ -29,7 +29,7 @@ public class BookController {
     }
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public void create(@RequestBody Book book){
+    public void create(@Valid @RequestBody Book book){
         bookService.save(book);
     }
 
