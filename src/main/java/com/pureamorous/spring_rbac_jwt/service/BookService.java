@@ -22,6 +22,9 @@ public class BookService {
     public Book findById(Integer id) {
         var result = bookRepository.findById(id);
 
+        if (result.isEmpty())
+            throw new DataNotFoundException("Book with id(%d) not found".formatted(id));
+
         return result.get();
     }
 
@@ -31,6 +34,8 @@ public class BookService {
 
     @Transactional
     public void remove(Integer id) {
+        if (!bookRepository.existsById(id))
+            throw new DataNotFoundException("Book with id(%d) not found".formatted(id));
 
         bookRepository.deleteById(id);
     }
@@ -39,6 +44,9 @@ public class BookService {
     public void update(Book book) {
 
         var forUpdate = bookRepository.getReferenceById(book.getId());
+        if (forUpdate.getId() == null)
+            throw new DataNotFoundException("Book with id(%d) not found".formatted(forUpdate.getId()));
+
         forUpdate.setName(book.getName());
         forUpdate.setWriter(book.getWriter());
     }
