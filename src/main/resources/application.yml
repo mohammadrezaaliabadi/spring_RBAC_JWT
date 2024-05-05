@@ -1,0 +1,5 @@
+spring:
+  profiles:
+    active: dev
+app:
+  name: name:spring_RABC_JWT

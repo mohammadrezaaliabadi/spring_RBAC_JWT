@@ -1,0 +1,19 @@
+app:
+  description: Spring Boot Application (Development Profile)
+  security:
+    jwt:
+      secret-key: change me in production !! ( use environment variable or ... )
+      issuer: ${app.name}
+      expire-after: 3600000
+
+spring:
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        ddl-auto: update
+        hbm2ddl:
+          auto: update
+        transaction:
+          jta:
+            platform: JBossTS
