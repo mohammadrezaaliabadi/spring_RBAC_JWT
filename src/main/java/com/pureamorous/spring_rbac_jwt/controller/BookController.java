@@ -3,7 +3,6 @@ package com.pureamorous.spring_rbac_jwt.controller;
 
 import com.pureamorous.spring_rbac_jwt.entities.Book;
 import com.pureamorous.spring_rbac_jwt.service.BookService;
-import com.pureamorous.spring_rbac_jwt.service.JPABookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -16,6 +16,9 @@ public class JPAUserService implements UserService, UserDetailsService {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -29,6 +32,7 @@ public class JPAUserService implements UserService, UserDetailsService {
     }
 
     public User save(User user){
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
 }
