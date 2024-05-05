@@ -1,62 +1,22 @@
 package com.pureamorous.spring_rbac_jwt.service;
 
 import com.pureamorous.spring_rbac_jwt.entities.Book;
-import com.pureamorous.spring_rbac_jwt.repositories.BookRepository;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class BookService {
-    @Autowired
-    private BookRepository bookRepository;
+public interface BookService {
 
-    @Transactional
-    public Book save(Book book) {
-        return bookRepository.save(book);
-    }
+    Book findById(Integer id);
 
-    public Book findById(Integer id) {
-        var result = bookRepository.findById(id);
+    Boolean isExists(String name) ;
 
-        if (result.isEmpty())
-            throw new DataNotFoundException("Book with id(%d) not found".formatted(id));
+    void remove(Integer id);
 
-        return result.get();
-    }
+    Book save(Book book);
 
-    public Boolean isExists(String name) {
-        return bookRepository.existsByName(name);
-    }
+    void update(Book book);
 
-    @Transactional
-    public void remove(Integer id) {
-        if (!bookRepository.existsById(id))
-            throw new DataNotFoundException("Book with id(%d) not found".formatted(id));
+    List<Book> findAll();
 
-        bookRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void update(Book book) {
-
-        var forUpdate = bookRepository.getReferenceById(book.getId());
-        if (forUpdate.getId() == null)
-            throw new DataNotFoundException("Book with id(%d) not found".formatted(forUpdate.getId()));
-
-        forUpdate.setName(book.getName());
-        forUpdate.setWriter(book.getWriter());
-    }
-
-    public List<Book> findAll() {
-        //TODO don't forge pagination
-        return bookRepository.findAll();
-    }
-
-    public String getService(){
-        return "Book service";
-    }
+    String getService();
 }
