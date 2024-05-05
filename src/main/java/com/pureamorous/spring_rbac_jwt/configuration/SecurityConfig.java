@@ -1,5 +1,7 @@
 package com.pureamorous.spring_rbac_jwt.configuration;
 
+import com.pureamorous.spring_rbac_jwt.controller.customization.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,15 +13,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 
 @Configuration
 public class SecurityConfig {
+
+    @Autowired
+    private JwtAuthenticationFilter  jwtAuthenticationFilter;
 
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf(AbstractHttpConfigurer::disable); // todo enable it !!!!!!!!!!!!!!!!!!!
+
+        http.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class);
         http.authorizeHttpRequests(matcherRegistry->{
             matcherRegistry.requestMatchers("api/auth").permitAll();
             matcherRegistry.anyRequest().authenticated();
