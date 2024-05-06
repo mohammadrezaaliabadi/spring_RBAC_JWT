@@ -46,8 +46,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     AuthorityUtils.createAuthorityList(decoded.getClaim("authorities").asList(String.class))
             );
             SecurityContextHolder.getContext().setAuthentication(auth);
-        }catch (JWTVerificationException jwtVerificationException) {
-            throw new ServletException("Token Not verified", jwtVerificationException);
+        } catch (JWTVerificationException jwtVerificationException) {
+            // wrap JWTVerificationException in subclass of AuthenticationException
+            // for use ExceptionTranslationFilter and AuthenticationEntryPoint to
+            // handling this kind of exception in global Exception Handler class (controller.customization)
+            throw new TokenVerificationException(jwtVerificationException.getMessage());
         }
     }
 }

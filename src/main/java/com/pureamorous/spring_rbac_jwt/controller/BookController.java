@@ -44,7 +44,7 @@ public class BookController {
         service.remove(id);
     }
 
-    @PreAuthorize("hasAuthority('update')")
+    @PreAuthorize("hasAuthority('change')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public void update(@Valid @RequestBody Book book) {

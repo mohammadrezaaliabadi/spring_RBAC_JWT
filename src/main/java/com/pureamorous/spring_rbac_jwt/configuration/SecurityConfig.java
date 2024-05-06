@@ -1,7 +1,10 @@
 package com.pureamorous.spring_rbac_jwt.configuration;
 
 import com.pureamorous.spring_rbac_jwt.controller.customization.JwtAuthenticationFilter;
+import com.pureamorous.spring_rbac_jwt.controller.customization.MyAccessDeniedHandler;
+import com.pureamorous.spring_rbac_jwt.controller.customization.MyAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,16 +27,30 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter  jwtAuthenticationFilter;
 
+    @Autowired
+    private MyAccessDeniedHandler myAccessDeniedHandler;
+
+    @Autowired
+    private MyAuthenticationEntryPoint authenticationEntryPoint;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+        http.logout(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable); // todo enable it !!!!!!!!!!!!!!!!!!!
-
+        http.sessionManagement(AbstractHttpConfigurer::disable);
+        http.requestCache(AbstractHttpConfigurer::disable);
         http.addFilterAfter(jwtAuthenticationFilter, ExceptionTranslationFilter.class);
+
         http.authorizeHttpRequests(matcherRegistry->{
             matcherRegistry.requestMatchers("api/auth").permitAll();
             matcherRegistry.anyRequest().authenticated();
+        });
+
+        http.exceptionHandling(exceptionHandlingConfigurer ->{
+            exceptionHandlingConfigurer.accessDeniedHandler(myAccessDeniedHandler);
+            exceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint);
         });
         return http.build();
     }
@@ -45,6 +62,13 @@ public class SecurityConfig {
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
 
         return new ProviderManager(daoAuthenticationProvider);
+    }
+
+    @Bean
+    public FilterRegistrationBean<JwtAuthenticationFilter> disableFilterAutoRegistration(JwtAuthenticationFilter filter) {
+        var registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 
     @Bean
