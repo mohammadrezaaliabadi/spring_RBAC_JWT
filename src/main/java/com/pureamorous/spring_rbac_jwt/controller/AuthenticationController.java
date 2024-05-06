@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping(path = "api/auth",
         produces = MediaType.APPLICATION_JSON_VALUE)
@@ -25,14 +28,18 @@ public class AuthenticationController {
     private JwtHandler jwtHandler;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String login(@Valid @RequestBody UserAuthenticationInfo info){
+    public Map<String,String> login(@Valid @RequestBody UserAuthenticationInfo info){
         var auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(info.getUsername(), info.getPassword())
         );
 
 
+
+
         var authorities = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).toArray(String[]::new);
 
-        return jwtHandler.generate(info.getUsername(), authorities);
+        var response  = new HashMap<String,String>();
+        response.put("token", jwtHandler.generate(auth.getName(),authorities));
+        return response;
     }
 }
